@@ -24,8 +24,6 @@
 
 
 //---- Features Configuration -----------------
-#define USE_TEMP_PROT
-// #define USE_CTROL_FAN_ALWAYS_ON
 
 // -- Freq for the timers
 // #define USE_PWM_16000_FREQ_1KHZ
@@ -41,19 +39,18 @@
 // #ifdef HARDWARE_VERSION_1_0
 //GPIOA pin0    
 //GPIOA pin1    
-//GPIOA pin2    
-//GPIOA pin3    NC
 
-//GPIOA pin4    Analog Temp LM335
+//GPIOA pin2    Usart1 tx
+//GPIOA pin3    Usart1 rx
 
+//GPIOA pin4
 //GPIOA pin5    
 //GPIOA pin6    NC
 
 //GPIOA pin7    TIM14_CH1
 
-//GPIOB pin0    Analog Adc_In8
-
-//GPIOB pin1    Analog Adc_In9
+//GPIOB pin0
+//GPIOB pin1
 
 //GPIOA pin8    TIM1_CH1
 
@@ -67,16 +64,11 @@
 #define LED_OFF    (GPIOA->BSRR = 0x00001000)
 #define LED_ON    (GPIOA->BSRR = 0x10000000)
 
-
 //GPIOA pin13
 //GPIOA pin14    
 //GPIOA pin15    NC
 
-//GPIOB pin3    CTRL_FAN
-#define CTRL_FAN    ((GPIOB->ODR & 0x0008) != 0)
-#define CTRL_FAN_ON    (GPIOB->BSRR = 0x00000008)
-#define CTRL_FAN_OFF    (GPIOB->BSRR = 0x00080000)
-
+//GPIOB pin3    
 
 //GPIOB pin4    TIM3_CH1
 

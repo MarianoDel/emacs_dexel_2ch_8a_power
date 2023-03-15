@@ -37,9 +37,38 @@ extern ma32_u16_data_obj_t pote_2_filter;
 
 
 // Module Private Functions ----------------------------------------------------
+void TF_Led (void);
+void TF_TIM16_Pwm_CH1N (void);
+void TF_TIM14_Pwm_CH1 (void);
+void TF_TIM3_CH1_ConstantOff_TIM3_CH2_TriggerInput (void);
+void TF_TIM1_CH1_ConstantOff_TIM1_CH2_TriggerInput (void);
+void TF_Adc_With_DMA_TIM16_Pwm_CH1N (void);
+void TF_Two_Complete_Channels_Hardware (void);
+void TF_Two_Complete_Channels_Hardware_With_Offset (void);
+void TF_TIM17_Interrupt (void);
+void TF_TIM17_Interrupt_Soft_Pwm (void);
+void TF_Two_Complete_Channels_Hardware_With_Offset_Soft_PWM (void);
 
 
 // Module Functions ------------------------------------------------------------
+void TF_Hardware_Tests (void)
+{
+    // Begin Hardware Tests - check test_functions module
+    // TF_Led();    //simple led functionality
+    // TF_TIM16_Pwm_CH1N ();
+    // TF_TIM14_Pwm_CH1 ();
+    TF_TIM3_CH1_ConstantOff_TIM3_CH2_TriggerInput ();
+    // TF_TIM1_CH1_ConstantOff_TIM1_CH2_TriggerInput ();
+    // TF_Adc_With_DMA_TIM16_Pwm_CH1N ();
+    // TF_Two_Complete_Channels_Hardware ();
+    // TF_Two_Complete_Channels_Hardware_With_Offset ();
+    // TF_TIM17_Interrupt ();
+    // TF_TIM17_Interrupt_Soft_Pwm ();
+    // TF_Two_Complete_Channels_Hardware_With_Offset_Soft_PWM ();
+    // End Hardware Tests -------------------------------
+}
+
+
 void TF_Led (void)
 {
     while (1)
@@ -50,20 +79,6 @@ void TF_Led (void)
             LED_ON;
 
         Wait_ms(1000);
-    }
-}
-
-
-void TF_Control_Fan (void)
-{
-    while (1)
-    {
-        if (CTRL_FAN)
-            CTRL_FAN_OFF;
-        else
-            CTRL_FAN_ON;
-
-        Wait_ms(5000);
     }
 }
 

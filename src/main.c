@@ -76,21 +76,9 @@ int main(void)
     if (SysTick_Config(48000))
         SysTickError();
 
-    // Begin Hardware Tests - check test_functions module
-    // TF_Led();    //simple led functionality
-    // TF_Control_Fan ();
-    // TF_TIM16_Pwm_CH1N ();
-    // TF_TIM14_Pwm_CH1 ();
-    // TF_TIM3_CH1_ConstantOff_TIM3_CH2_TriggerInput ();
-    // TF_TIM1_CH1_ConstantOff_TIM1_CH2_TriggerInput ();
-    // TF_Adc_With_DMA_TIM16_Pwm_CH1N ();
-    // TF_Two_Complete_Channels_Hardware ();
-    // TF_Two_Complete_Channels_Hardware_With_Offset ();
-    // TF_TIM17_Interrupt ();
-    // TF_TIM17_Interrupt_Soft_Pwm ();
-    // TF_Two_Complete_Channels_Hardware_With_Offset_Soft_PWM ();
-    // End Hardware Tests -------------------------------
-
+    // Hardware Tests
+    TF_Hardware_Tests ();
+    
     // Hardware Inits. ---------------------------
     // Init ADC and DMA
     AdcConfig();
@@ -239,39 +227,6 @@ int main(void)
             main_state = MAIN_HARD_INIT;
             break;
         }
-
-#ifdef USE_TEMP_PROT
-        if ((main_state != MAIN_IN_OVERTEMP) &&
-            (!timer_check_temp))
-        {
-            if (Temp_Channel > TEMP_DISCONECT)
-            {
-                // channels reset
-                PWM_Soft_Set_Channels (1, 0);
-                PWM_Soft_Set_Channels (2, 0);                
-                Update_TIM14_CH1 (0);
-                Update_TIM16_CH1N (0);
-                
-                CTRL_FAN_ON;
-                
-                Wait_ms (250);    //give some time for soft pwm updates
-                TIM17Disable();
-
-                
-                main_state = MAIN_IN_OVERTEMP;
-            }
-            else if (Temp_Channel > TEMP_IN_35)
-                CTRL_FAN_ON;
-            else if (Temp_Channel < TEMP_IN_30)
-                CTRL_FAN_OFF;
-
-            timer_check_temp = 2000;    //check again in two seconds
-        }
-#endif    //USE_TEMP_PROT
-        
-#ifdef USE_CTROL_FAN_ALWAYS_ON
-        CTRL_FAN_ON;
-#endif
 
     }    //end of while 1
 
