@@ -17,6 +17,7 @@
 #include "adc.h"
 #include "dma.h"
 #include "temperatures.h"
+#include "usart.h"
 
 #include "dsp.h"
 
@@ -42,13 +43,15 @@ void TF_TIM16_Pwm_CH1N (void);
 void TF_TIM14_Pwm_CH1 (void);
 void TF_TIM3_CH1_ConstantOff_TIM3_CH2_TriggerInput (void);
 void TF_TIM1_CH1_ConstantOff_TIM1_CH2_TriggerInput (void);
-void TF_Adc_With_DMA_TIM16_Pwm_CH1N (void);
 void TF_Two_Complete_Channels_Hardware (void);
+
 void TF_Two_Complete_Channels_Hardware_With_Offset (void);
 void TF_TIM17_Interrupt (void);
 void TF_TIM17_Interrupt_Soft_Pwm (void);
 void TF_Two_Complete_Channels_Hardware_With_Offset_Soft_PWM (void);
 
+void TF_Usart1_Tx (void);
+void TF_Usart1_Tx_Rx_Int (void);
 
 // Module Functions ------------------------------------------------------------
 void TF_Hardware_Tests (void)
@@ -57,10 +60,13 @@ void TF_Hardware_Tests (void)
     // TF_Led();    //simple led functionality
     // TF_TIM16_Pwm_CH1N ();
     // TF_TIM14_Pwm_CH1 ();
-    TF_TIM3_CH1_ConstantOff_TIM3_CH2_TriggerInput ();
+    // TF_TIM3_CH1_ConstantOff_TIM3_CH2_TriggerInput ();
     // TF_TIM1_CH1_ConstantOff_TIM1_CH2_TriggerInput ();
-    // TF_Adc_With_DMA_TIM16_Pwm_CH1N ();
     // TF_Two_Complete_Channels_Hardware ();
+
+    // TF_Usart1_Tx ();
+    TF_Usart1_Tx_Rx_Int ();
+    
     // TF_Two_Complete_Channels_Hardware_With_Offset ();
     // TF_TIM17_Interrupt ();
     // TF_TIM17_Interrupt_Soft_Pwm ();
@@ -129,77 +135,20 @@ void TF_TIM1_CH1_ConstantOff_TIM1_CH2_TriggerInput (void)
 }
 
 
-void TF_Adc_With_DMA_TIM16_Pwm_CH1N (void)
-{
-    TIM_16_Init ();
-    
-    // Init ADC and DMA
-    AdcConfig();
-    DMAConfig();
-    DMA1_Channel1->CCR |= DMA_CCR_EN;
-    ADC1->CR |= ADC_CR_ADSTART;
-
-    while (1)
-    {
-        Wait_ms(5);
-        // Update_TIM16_CH1N (Temp_Channel);
-        // Update_TIM16_CH1N (Pote_Channel_1);
-        Update_TIM16_CH1N (Pote_Channel_2);        
-    }
-    
-}
-
-
 void TF_Two_Complete_Channels_Hardware (void)
 {
-    // Init ADC and DMA
-    AdcConfig();
-    DMAConfig();
-    DMA1_Channel1->CCR |= DMA_CCR_EN;
-    ADC1->CR |= ADC_CR_ADSTART;
-
-    // Start of Complete Pote Channel 1
+    // Start of Complete Channel 2
     TIM_14_Init ();
     TIM_1_Init_pwm_neg_CH1_trig_CH2 ();
     
-    // Start of Complete Pote Channel 2
+    // Start of Complete Channel 1
     TIM_16_Init ();
     TIM_3_Init_pwm_neg_CH1_trig_CH2 ();    
+
+    Update_TIM14_CH1 (200);
+    Update_TIM16_CH1N (200);
     
-    while (1)
-    {
-        Wait_ms(5);
-
-        Update_TIM14_CH1 (Pote_Channel_1);
-        Update_TIM16_CH1N (Pote_Channel_2);        
-    }
-    
-}
-
-
-void TF_Two_Complete_Channels_Hardware_With_Offset (void)
-{
-    // Init ADC and DMA
-    AdcConfig();
-    DMAConfig();
-    DMA1_Channel1->CCR |= DMA_CCR_EN;
-    ADC1->CR |= ADC_CR_ADSTART;
-
-    // Start of Complete Pote Channel 1
-    TIM_14_Init ();
-    TIM_1_Init_pwm_neg_CH1_trig_CH2 ();
-    
-    // Start of Complete Pote Channel 2
-    TIM_16_Init ();
-    TIM_3_Init_pwm_neg_CH1_trig_CH2 ();    
-    
-    while (1)
-    {
-        Wait_ms(5);
-
-        Update_TIM14_CH1 (Pote_Channel_1 + 125);
-        Update_TIM16_CH1N (Pote_Channel_2 + 125);        
-    }
+    while (1);
     
 }
 
@@ -329,6 +278,45 @@ void TF_Two_Complete_Channels_Hardware_With_Offset_Soft_PWM (void)
             Update_TIM16_CH1N (255);
         }
     }
+}
+
+
+void TF_Usart1_Tx (void)
+{
+    Usart1Config();
+
+    Usart1Send("Test single string send on 2 secs.\n");
+    while (1)
+    {
+        Usart1Send("Mariano\n");
+        Wait_ms(2000);
+    }
+}
+
+
+void TF_Usart1_Tx_Rx_Int (void)
+{
+    // start usart1 and loop rx -> tx after 3 secs
+    Usart1Config();
+    char buff_local [128] = { 0 };
+    unsigned char readed = 0;
+
+    Usart1Send("Test string loop. Answers every 3 secs.\n");    
+    while(1)
+    {
+        Wait_ms(2800);
+        if (Usart1HaveData())
+        {
+            LED_ON;
+            Usart1HaveDataReset();
+            readed = Usart1ReadBuffer(buff_local, 127);
+            *(buff_local + readed) = '\n';    //cambio el '\0' por '\n' antes de enviar
+            *(buff_local + readed + 1) = '\0';    //ajusto el '\0'
+            Usart1Send(buff_local);
+            Wait_ms(200);
+            LED_OFF;
+        }
+    }    
 }
 
 //--- end of file ---//

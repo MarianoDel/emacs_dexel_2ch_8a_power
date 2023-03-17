@@ -60,9 +60,9 @@
 //GPIOA pin11    NC
 
 //GPIOA pin12
-#define LED    ((GPIOA->ODR & 0x1000) == 0)
-#define LED_OFF    (GPIOA->BSRR = 0x00001000)
-#define LED_ON    (GPIOA->BSRR = 0x10000000)
+#define LED    ((GPIOA->ODR & 0x1000) != 0)
+#define LED_ON    (GPIOA->BSRR = 0x00001000)
+#define LED_OFF    (GPIOA->BSRR = 0x10000000)
 
 //GPIOA pin13
 //GPIOA pin14    
