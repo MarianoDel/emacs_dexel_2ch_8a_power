@@ -79,6 +79,7 @@ SRC += ./src/it.c
 SRC += ./src/tim.c
 # SRC += ./src/spi.c
 SRC += ./src/usart.c
+SRC += ./src/utils.c
 # SRC += ./src/flash_program.c
 SRC += ./src/test_functions.c
 SRC += ./src/pwm.c

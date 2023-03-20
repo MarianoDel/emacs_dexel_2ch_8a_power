@@ -18,6 +18,7 @@
 #include "dma.h"
 #include "temperatures.h"
 #include "usart.h"
+#include "utils.h"
 
 #include "dsp.h"
 
@@ -52,6 +53,7 @@ void TF_Two_Complete_Channels_Hardware_With_Offset_Soft_PWM (void);
 
 void TF_Usart1_Tx (void);
 void TF_Usart1_Tx_Rx_Int (void);
+void TF_Two_Complete_Channels_Usart (void);
 
 // Module Functions ------------------------------------------------------------
 void TF_Hardware_Tests (void)
@@ -65,7 +67,8 @@ void TF_Hardware_Tests (void)
     // TF_Two_Complete_Channels_Hardware ();
 
     // TF_Usart1_Tx ();
-    TF_Usart1_Tx_Rx_Int ();
+    // TF_Usart1_Tx_Rx_Int ();
+    TF_Two_Complete_Channels_Usart ();
     
     // TF_Two_Complete_Channels_Hardware_With_Offset ();
     // TF_TIM17_Interrupt ();
@@ -317,6 +320,83 @@ void TF_Usart1_Tx_Rx_Int (void)
             LED_OFF;
         }
     }    
+}
+
+
+void TF_Two_Complete_Channels_Usart (void)
+{
+    // Start of Complete Channel 2
+    TIM_14_Init ();
+    TIM_1_Init_pwm_neg_CH1_trig_CH2 ();
+    
+    // Start of Complete Channel 1
+    TIM_16_Init ();
+    TIM_3_Init_pwm_neg_CH1_trig_CH2 ();    
+
+    Update_TIM14_CH1 (40);
+    Update_TIM16_CH1N (40);
+
+    // Start Usart
+    Usart1Config();
+    char buff_local [128] = { 0 };
+    unsigned char readed = 0;
+
+    Usart1Send("Test usart string to pwm channels\n");
+
+    // usart channels values
+    unsigned char channel1 = 0;
+    unsigned char channel2 = 0;
+
+    while (1)
+    {
+        if (Usart1HaveData())
+        {
+            LED_ON;
+            Usart1HaveDataReset();
+            readed = Usart1ReadBuffer(buff_local, 127);
+            if (readed == sizeof("ch1 255 ch2 255 sum 511"))    //readed incluye \0
+            {
+                unsigned short ch1 = 0;
+                unsigned short ch2 = 0;
+                unsigned short sum = 0;
+                int qtty = 0;
+
+                qtty = StringIsANumber(buff_local + sizeof("ch1 ") - 1, &ch1);
+                if (qtty == 3)
+                {
+                    qtty = StringIsANumber(buff_local + sizeof("ch1 255 ch2 ") - 1, &ch2);
+                    if (qtty == 3)
+                    {
+                        qtty = StringIsANumber(buff_local + sizeof("ch1 255 ch2 255 sum ") - 1, &sum);
+                        if (qtty == 3)
+                        {
+                            if ((ch1 + ch2) == sum)
+                            {
+                                channel1 = ch1;
+                                channel2 = ch2;
+
+                                // always have a minimun for ints
+                                Update_TIM14_CH1 ((channel2 << 4) + 40);
+                                Update_TIM16_CH1N ((channel1 << 4) + 40);
+                            }
+                            else
+                                Usart1Send("err verif\n");
+                        }
+                        else
+                            Usart1Send("err sum\n");
+                    }
+                    else
+                        Usart1Send("err ch2\n");
+                }
+                else
+                    Usart1Send("err ch1\n");
+            }
+            else
+                Usart1Send("err number of bytes\n");
+            
+            LED_OFF;
+        }
+    }
 }
 
 //--- end of file ---//
