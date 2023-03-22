@@ -120,32 +120,36 @@ void PWM_Map_Pre_Filter (unsigned char dmx_data, unsigned short * pwm_ena, unsig
 }
 
 
+#define MIN_FOR_SOFT_PWM    100
 // get dmx_filtered from 0 to 4095
-// answer pwm_ena 0 to 4096
-// answer pwm_ch 0 to 4096
+// answer pwm_ena 0 to 255
+// answer pwm_ch 0 to 4095
+// pwm with minimun
 void PWM_Map_Post_Filter (unsigned short dmx_filtered, unsigned short * pwm_ena, unsigned short * pwm_ch)
 {
     unsigned short dmx_ena = 0;
     unsigned int dmx_ch = 0;
     
-    if (dmx_filtered > 64)
+    if (dmx_filtered > 255)
     {
-        dmx_ena = 64;
-        dmx_ch = dmx_filtered - 64;
+        dmx_ena = 255;
+        dmx_ch = dmx_filtered - 255 + MIN_FOR_SOFT_PWM;
+
+        // adjust for max pwm 4095
+        dmx_ch = dmx_ch *104;
+        dmx_ch = dmx_ch / 100;
+
+        if (dmx_ch > 4095)
+            dmx_ch = 4095;
     }
     else
     {
         dmx_ena = dmx_filtered;
-        dmx_ch = 0;
+        dmx_ch = MIN_FOR_SOFT_PWM;
     }
 
-    // *pwm_ena = dmx_ena * 64;
-    *pwm_ena = dmx_ena << 6;
-    
-    dmx_ch = dmx_ch * 1016;
-    dmx_ch = dmx_ch / 1000;
-    *pwm_ch = (unsigned short) dmx_ch;
-    
+    *pwm_ena = dmx_ena;
+    *pwm_ch = dmx_ch;
 }
 
 
