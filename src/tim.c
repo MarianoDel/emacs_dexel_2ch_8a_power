@@ -115,9 +115,8 @@ void Wait_ms (unsigned short wait)
 }
 
 
-
-
-#define VALUE_FOR_CONSTANT_OFF    173    //3.6us tick 20.83ns
+// #define VALUE_FOR_CONSTANT_OFF    173    //3.6us tick 20.83ns
+#define VALUE_FOR_CONSTANT_OFF    96    //2us tick 20.83ns
 void TIM_1_Init_pwm_neg_CH1_trig_CH2 (void)
 {
     if (!RCC_TIM1_CLK)
@@ -227,7 +226,7 @@ void TIM_14_Init (void)
     TIM14->CCER |= TIM_CCER_CC1E;    //CH1 enable on pin active high
 
     TIM14->PSC = 2;
-    TIM14->ARR = 4096;    // 4KHz 4096pts
+    TIM14->ARR = 4095 - 1;    // 4KHz 4096pts
 
     // Pins alternative config.
     unsigned int temp;
@@ -258,7 +257,7 @@ void TIM_16_Init (void)
     TIM16->CCMR1 = 0x0060;            //CH1 output PWM mode 1
     // TIM16->CCER |= TIM_CCER_CC1NE | TIM_CCER_CC1NP;    // CH1N enabled polarity reversal
     TIM16->CCER |= TIM_CCER_CC1NE;    // CH1N enabled
-    TIM16->ARR = 4096;    // 4KHz 4096 pts    
+    TIM16->ARR = 4095 - 1;    // 4KHz 4096 pts    
     TIM16->CNT = 0;
     TIM16->PSC = 2;
 
@@ -300,11 +299,6 @@ void TIM17_IRQHandler (void)
     if (TIM17->SR & 0x01)
     {
         TIM17->SR = 0x00;    //flag down
-        // if (LED)
-        //     LED_OFF;
-        // else
-        //     LED_ON;
-
         PWM_Soft_Handler_Low_Freq ();
     }    
 }

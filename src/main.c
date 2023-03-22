@@ -57,8 +57,8 @@ volatile unsigned short timer_standby = 0;
 volatile unsigned short timer_check_temp = 0;
 
 //-- for the filters and outputs
-ma32_u16_data_obj_t pote_1_filter;
-ma32_u16_data_obj_t pote_2_filter;
+ma32_u16_data_obj_t ch1_filter;
+ma32_u16_data_obj_t ch2_filter;
 
 
 // Module Private Functions ----------------------------------------------------
@@ -80,12 +80,6 @@ int main(void)
     TF_Hardware_Tests ();
     
     // Hardware Inits. ---------------------------
-    // Init ADC and DMA
-    AdcConfig();
-    DMAConfig();
-    DMA1_Channel1->CCR |= DMA_CCR_EN;
-    ADC1->CR |= ADC_CR_ADSTART;
-
     // Start of Complete Pote Channel 1
     TIM_14_Init ();
     TIM_1_Init_pwm_neg_CH1_trig_CH2 ();
@@ -117,9 +111,10 @@ int main(void)
         {
         case MAIN_HARD_INIT:
             
-            MA32_U16Circular_Reset (&pote_1_filter);
-            MA32_U16Circular_Reset (&pote_2_filter);    
+            MA32_U16Circular_Reset (&ch1_filter);
+            MA32_U16Circular_Reset (&ch2_filter);    
 
+            // tim17 for soft pwm
             TIM17Enable();
             
             main_state++;
@@ -129,8 +124,8 @@ int main(void)
             
             if (!timer_standby)
             {
-                ch1_input_filtered = MA32_U16Circular (&pote_1_filter, Pote_Channel_1);
-                ch2_input_filtered = MA32_U16Circular (&pote_2_filter, Pote_Channel_2);
+                ch1_input_filtered = MA32_U16Circular (&ch1_filter, Pote_Channel_1);
+                ch2_input_filtered = MA32_U16Circular (&ch2_filter, Pote_Channel_2);
 
                 // the max points are in 3970
                 if (ch1_input_filtered > 3970)
