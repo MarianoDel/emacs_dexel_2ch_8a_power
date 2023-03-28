@@ -18,8 +18,8 @@
 
 
 // #define VALUE_FOR_LEAST_FREQ    1200    //40KHz
-// #define VALUE_FOR_LEAST_FREQ    1500    //30KHz
-#define VALUE_FOR_LEAST_FREQ    2300    //20KHz
+#define VALUE_FOR_LEAST_FREQ    1500    //30KHz
+// #define VALUE_FOR_LEAST_FREQ    2300    //20KHz
 
 
 #ifdef USE_PWM_16000_FREQ_1KHZ

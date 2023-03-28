@@ -11,6 +11,7 @@
 #include "usart.h"
 #include "hard.h"
 #include "utils.h"
+#include "pwm.h"
 
 #include "filters_and_offsets.h"
 
@@ -83,10 +84,12 @@ void Comms_Update (void)
             if (current == '4')
             {
                 FiltersAndOffsets_Set_Current(4);
+                PWM_Map_Post_Filter_Top_Multiplier(103);                
             }
             else if (current == '8')
             {
                 FiltersAndOffsets_Set_Current(8);
+                PWM_Map_Post_Filter_Top_Multiplier(94);
             }
             else
             {
