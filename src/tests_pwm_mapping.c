@@ -41,7 +41,8 @@ unsigned short pwm_data_ch2 [VECTOR_LENGTH] = { 0 };
 
 // Tests Functions -------------------------------------------------------------
 void Test_Dmx_Map_Pre (void);
-void Test_Dmx_Map_Post (void);
+void Test_Dmx_Map_Post_Ramp (void);
+void Test_Dmx_Map_Post_Step (void);
 
 
 // Main Function to Test -------------------------------------------------------
@@ -51,8 +52,8 @@ void Test_Dmx_Map_Post (void);
 
 
 // Module Mock Functions -------------------------------------------------------
-void Update_TIM3_CH1 (unsigned short new_pwm);
-void Update_TIM3_CH2 (unsigned short new_pwm);
+void Update_TIM16_CH1N (unsigned short new_pwm);
+void Update_TIM14_CH1 (unsigned short new_pwm);
 
 
 
@@ -62,13 +63,49 @@ int main (int argc, char *argv[])
     printf("Start of PWM mapping...\n");
 
     // Test_Dmx_Map_Pre ();
-    Test_Dmx_Map_Post ();
+    Test_Dmx_Map_Post_Ramp ();
+    // Test_Dmx_Map_Post_Step ();    
 
     return 0;
 }
 
 
-void Test_Dmx_Map_Post (void)
+void Test_Dmx_Map_Post_Step (void)
+{
+    printf("test dmx -> pwm conversion for pwm_ena & pwm_ch\n");
+
+    unsigned short pwm_ena [4096] = { 0 };
+    unsigned short pwm_ch [4096] = { 0 };
+    
+    for (int i = 0; i < 4096; i++)
+    {
+        // PWM_Map_Post_Filter(2047, &pwm_ena[i], &pwm_ch[i]);
+        PWM_Map_Post_Filter(4095, &pwm_ena[i], &pwm_ch[i]);        
+    }
+    
+    ShowVectorUShort("\nVector pwm ena:\n", pwm_ena, 16);
+    ShowVectorUShort("\nVector pwm ch:\n", pwm_ch, 16);
+
+    ///////////////////////////
+    // Backup Data to a file //
+    ///////////////////////////
+    FILE * file = fopen("data.txt", "w");
+
+    if (file == NULL)
+    {
+        printf("data file not created!\n");
+        return;
+    }
+
+    Vector_UShort_To_File (file, "pwm_ena", pwm_ena, 4096);
+    Vector_UShort_To_File (file, "pwm_ch", pwm_ch, 4096);    
+
+    printf("\nRun by hand python3 simul_outputs.py\n");
+    
+}
+
+
+void Test_Dmx_Map_Post_Ramp (void)
 {
     printf("test dmx -> pwm conversion for pwm_ena & pwm_ch\n");
 
@@ -135,14 +172,14 @@ void Test_Dmx_Map_Pre (void)
 
 
 // Module Mocked Functions -----------------------------------------------------
-void Update_TIM3_CH1 (unsigned short new_pwm)
+void Update_TIM16_CH1N (unsigned short new_pwm)
 {
     // pwm_data_ch1[pwm_cntr] = new_pwm;
     // updated = 1;
 }
 
 
-void Update_TIM3_CH2 (unsigned short new_pwm)
+void Update_TIM14_CH1 (unsigned short new_pwm)
 {
     // pwm_data_ch2[pwm_cntr] = new_pwm;
     // updated = 1;

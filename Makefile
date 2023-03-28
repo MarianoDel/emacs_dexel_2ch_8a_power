@@ -80,9 +80,10 @@ SRC += ./src/tim.c
 # SRC += ./src/spi.c
 SRC += ./src/usart.c
 SRC += ./src/utils.c
-# SRC += ./src/flash_program.c
+SRC += ./src/filters_and_offsets.c
 SRC += ./src/test_functions.c
 SRC += ./src/pwm.c
+SRC += ./src/comms.c
 
 
 
@@ -211,28 +212,6 @@ tests:
 	./a.out
 
 
-tests_pwm:
-	# first compile common modules (modules to test and dependencies)
-	gcc -c --coverage src/pwm.c -I. $(INCDIR) -DSTM32F030
-	# second auxiliary helper modules
-	gcc -c src/tests_ok.c -I $(INCDIR)
-	gcc --coverage src/tests_pwm.c pwm.o tests_ok.o
-	./a.out
-	# process coverage
-	gcov pwm.c -m
-
-
-tests_pwm_simul:
-	# first compile common modules (modules to test and dependencies)
-	gcc -c src/dsp.c -I. $(INCDIR)
-	gcc -c src/pwm.c -I. $(INCDIR) -DSTM32F030
-	# second auxiliary helper modules
-	gcc -c src/tests_ok.c -I $(INCDIR)
-	gcc -c src/tests_vector_utils.c -I $(INCDIR)
-	gcc src/tests_pwm_simul.c dsp.o pwm.o tests_ok.o tests_vector_utils.o
-	./a.out
-
-
 tests_pwm_mapping:
 	# first compile common modules (modules to test and dependencies)
 	gcc -c src/pwm.c -I. $(INCDIR) -DSTM32F030
@@ -242,7 +221,7 @@ tests_pwm_mapping:
 	gcc src/tests_pwm_mapping.c pwm.o tests_ok.o tests_vector_utils.o
 	./a.out
 
-tests_pwm_pre_post_simul:
+tests_filters_and_offsets:
 	# first compile common modules (modules to test and dependencies)
 	gcc -c src/dsp.c -I. $(INCDIR)
 	gcc -c src/pwm.c -I. $(INCDIR) -DSTM32F030
@@ -250,7 +229,7 @@ tests_pwm_pre_post_simul:
 	# second auxiliary helper modules
 	gcc -c src/tests_ok.c -I $(INCDIR)
 	gcc -c src/tests_vector_utils.c -I $(INCDIR)
-	gcc src/tests_pwm_pre_post_simul.c filters_and_offsets.o dsp.o pwm.o tests_ok.o tests_vector_utils.o
+	gcc src/tests_filters_and_offsets.c filters_and_offsets.o dsp.o pwm.o tests_ok.o tests_vector_utils.o
 	./a.out
 
 

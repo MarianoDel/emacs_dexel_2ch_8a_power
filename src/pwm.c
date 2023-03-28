@@ -120,6 +120,14 @@ void PWM_Map_Pre_Filter (unsigned char dmx_data, unsigned short * pwm_ena, unsig
 }
 
 
+unsigned char top_mult = 114;    // default for 4 amps
+// unsigned char top_mult = 108;    // multiplier ok for 8 amps
+void PWM_Map_Post_Filter_Top_Multiplier (unsigned char top_multiplier)
+{
+    top_mult = top_multiplier;
+}
+
+
 #define MIN_FOR_SOFT_PWM    100
 // get dmx_filtered from 0 to 4095
 // answer pwm_ena 0 to 255
@@ -136,7 +144,7 @@ void PWM_Map_Post_Filter (unsigned short dmx_filtered, unsigned short * pwm_ena,
         dmx_ch = dmx_filtered - 255 + MIN_FOR_SOFT_PWM;
 
         // adjust for max pwm 4095
-        dmx_ch = dmx_ch *104;
+        dmx_ch = dmx_ch * top_mult;
         dmx_ch = dmx_ch / 100;
 
         if (dmx_ch > 4095)
@@ -724,24 +732,24 @@ void PWM_Soft_Handler_Low_Freq (void)
 }
 
 
-void PWM_Soft_Set_Output_Ch1 (void)
+void PWM_Soft_Set_Output_Ch2 (void)
 {
     // soft_pwm_output_ch1 = 1;
     TIM1->ARR = VALUE_FOR_LEAST_FREQ;
     TIM1->EGR |= TIM_EGR_UG;    
-    LED_ON;    
+    // LED_ON;    
 }
 
 
-void PWM_Soft_Reset_Output_Ch1 (void)
+void PWM_Soft_Reset_Output_Ch2 (void)
 {
     // soft_pwm_output_ch1 = 0;
     TIM1->ARR = 0;
-    LED_OFF;
+    // LED_OFF;
 }
 
 
-void PWM_Soft_Set_Output_Ch2 (void)
+void PWM_Soft_Set_Output_Ch1 (void)
 {
     // soft_pwm_output_ch2 = 1;
     TIM3->ARR = VALUE_FOR_LEAST_FREQ;
@@ -749,7 +757,7 @@ void PWM_Soft_Set_Output_Ch2 (void)
 }
 
 
-void PWM_Soft_Reset_Output_Ch2 (void)
+void PWM_Soft_Reset_Output_Ch1 (void)
 {
     // soft_pwm_output_ch2 = 0;
     TIM3->ARR = 0;

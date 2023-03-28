@@ -181,12 +181,7 @@ void Usart1Config(void)
 
 unsigned char Usart1HaveData (void)
 {
-    unsigned char answer = 0;
-    
-    if (usart1_have_data)
-        answer = 1;
-
-    return answer;
+    return usart1_have_data;
 }
 
 
