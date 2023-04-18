@@ -120,10 +120,10 @@ void PWM_Map_Pre_Filter (unsigned char dmx_data, unsigned short * pwm_ena, unsig
 }
 
 
-// unsigned char top_mult = 114;    // default for 4.5 amps, 9
-// unsigned char top_mult = 108;    // default for 4.2, 9amps
-unsigned char top_mult = 103;    // default for 4.1, 8.9amps
-// unsigned char top_mult = 94;    // default 8amps
+unsigned char top_mult = 113;    // default to 4amps
+// unsigned char top_mult = 102;    // 8.03 amps
+// unsigned char top_mult = 97;    // 7.64 amps
+// unsigned char top_mult = 116;    // default for 4.2, 8.3amps
 void PWM_Map_Post_Filter_Top_Multiplier (unsigned char top_multiplier)
 {
     top_mult = top_multiplier;

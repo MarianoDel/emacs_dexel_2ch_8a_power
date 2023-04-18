@@ -80,16 +80,28 @@ void Comms_Update (void)
 
         if (!strncmp(buff_local, "current config ", sizeof("current config ") - 1))
         {
-            char current = *(buff_local + (sizeof("current config ") - 1)); 
-            if (current == '4')
+            char current = *(buff_local + (sizeof("current config ") - 1));
+            if ((current >= '1') && (current <= '8'))
             {
-                FiltersAndOffsets_Set_Current(4);
-                PWM_Map_Post_Filter_Top_Multiplier(103);                
-            }
-            else if (current == '8')
-            {
-                FiltersAndOffsets_Set_Current(8);
-                PWM_Map_Post_Filter_Top_Multiplier(94);
+                FiltersAndOffsets_Set_Current(current - '0');
+                if (current == '8')
+                    PWM_Map_Post_Filter_Top_Multiplier(102);
+                else if (current == '7')
+                    PWM_Map_Post_Filter_Top_Multiplier(104);
+                else if (current == '6')
+                    PWM_Map_Post_Filter_Top_Multiplier(107);
+                else if (current == '5')
+                    PWM_Map_Post_Filter_Top_Multiplier(110);
+                else if (current == '4')
+                    PWM_Map_Post_Filter_Top_Multiplier(113);
+                else if (current == '3')
+                    PWM_Map_Post_Filter_Top_Multiplier(118);
+                else if (current == '2')
+                    PWM_Map_Post_Filter_Top_Multiplier(133);
+                else if (current == '1')
+                    PWM_Map_Post_Filter_Top_Multiplier(196);
+
+                Usart1Send("ok\n");
             }
             else
             {
