@@ -195,10 +195,10 @@ void Test_Dmx_Map_Post_Individual (void)
     unsigned short eq_pwm = 0;
     float eq = 0.0;    
     
-    printf("\n set to 4 amps\n");
-    curr_mult = 8;
+    printf("\n set to 8 amps\n");
+    curr_mult = 16;
     // PWM_Soft_Handler_Low_Freq_Roof_Set(roof);
-    PWM_Map_Post_Filter_Top_Multiplier(113, curr_mult, 3);    
+    PWM_Map_Post_Filter_Top_Multiplier(102, curr_mult, 4);
 
     for (int i = 0; i < 256 * curr_mult; i += curr_mult)
     {
@@ -214,6 +214,25 @@ void Test_Dmx_Map_Post_Individual (void)
                eq_pwm);
     }
 
+    // printf("\n set to 4 amps\n");
+    // curr_mult = 8;
+    // // PWM_Soft_Handler_Low_Freq_Roof_Set(roof);
+    // PWM_Map_Post_Filter_Top_Multiplier(113, curr_mult, 3);    
+
+    // for (int i = 0; i < 256 * curr_mult; i += curr_mult)
+    // {
+    //     dmx = i;
+    //     PWM_Map_Post_Filter (dmx, &pwm_ena, &pwm_ch);
+    //     eq = pwm_ena * pwm_ch / roof;
+    //     eq_pwm = (unsigned short) eq;
+    //     printf("curr: %d, dmx: %d, pwm_ena: %d pwm_ch: %d eq_pwm: %d\n",
+    //            top_min_curr >> 1,
+    //            dmx,
+    //            pwm_ena,
+    //            pwm_ch,
+    //            eq_pwm);
+    // }
+    
     // printf("\n set to 2 amps\n");
     // curr_mult = 4;    
     // // PWM_Soft_Handler_Low_Freq_Roof_Set(roof);
