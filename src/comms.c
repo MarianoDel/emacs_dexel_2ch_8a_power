@@ -85,25 +85,51 @@ void Comms_Update (void)
             {
                 FiltersAndOffsets_Set_Current(current - '0');
                 if (current == '8')
-                    PWM_Map_Post_Filter_Top_Multiplier(102, 16, 4);
+                {
+                    PWM_Map_Post_Filter_Top_Multiplier(97, 16, 4);    // for 100pts min
+                    // PWM_Map_Post_Filter_Top_Multiplier(101, 16, 4);    // for 33pts min                    
+                    PWM_Soft_Handler_Low_Freq_Roof_Set (256);
+                }
                 else if (current == '7')
-                    PWM_Map_Post_Filter_Top_Multiplier(104, 14, 3);
+                {
+                    PWM_Map_Post_Filter_Top_Multiplier(99, 14, 3);    // for 100pts min
+                    // PWM_Map_Post_Filter_Top_Multiplier(103, 14, 3);    // for 33pts min                    
+                    PWM_Soft_Handler_Low_Freq_Roof_Set (256);
+                }
                 else if (current == '6')
-                    PWM_Map_Post_Filter_Top_Multiplier(107, 12, 3);
+                {
+                    PWM_Map_Post_Filter_Top_Multiplier(101, 12, 3);    // for 100pts min
+                    // PWM_Map_Post_Filter_Top_Multiplier(105, 12, 3);    // for 33pts min                    
+                    PWM_Soft_Handler_Low_Freq_Roof_Set (256);
+                }
                 else if (current == '5')
-                    PWM_Map_Post_Filter_Top_Multiplier(110, 10, 3);
+                {
+                    PWM_Map_Post_Filter_Top_Multiplier(103, 10, 3);    // for 100pts min
+                    // PWM_Map_Post_Filter_Top_Multiplier(109, 10, 3);    // for 33pts min                    
+                    PWM_Soft_Handler_Low_Freq_Roof_Set (256);
+                }
                 else if (current == '4')
-                    PWM_Map_Post_Filter_Top_Multiplier(113, 8, 3);
+                {
+                    PWM_Map_Post_Filter_Top_Multiplier(106, 8, 3);    // for 100pts min
+                    // PWM_Map_Post_Filter_Top_Multiplier(113, 8, 3);    // for 33pts min                    
+                    PWM_Soft_Handler_Low_Freq_Roof_Set (256);
+                }
                 else if (current == '3')
-                    PWM_Map_Post_Filter_Top_Multiplier(118, 6, 2);
+                {
+                    PWM_Map_Post_Filter_Top_Multiplier(111, 6, 2);    // for 100pts min
+                    // PWM_Map_Post_Filter_Top_Multiplier(120, 6, 2);    // for 33pts min                    
+                    PWM_Soft_Handler_Low_Freq_Roof_Set (256);
+                }
                 else if (current == '2')
                 {
-                    PWM_Map_Post_Filter_Top_Multiplier(133, 4, 2);
+                    PWM_Map_Post_Filter_Top_Multiplier(108, 4, 2);    // for 100pts min
+                    // PWM_Map_Post_Filter_Top_Multiplier(119, 4, 2);    // for 33pts min                    
                     PWM_Soft_Handler_Low_Freq_Roof_Set (128);
                 }
                 else if (current == '1')
                 {
-                    PWM_Map_Post_Filter_Top_Multiplier(196, 2, 1);
+                    PWM_Map_Post_Filter_Top_Multiplier(110, 2, 1);    // for 100pts min
+                    // PWM_Map_Post_Filter_Top_Multiplier(135, 2, 1);    // for 33pts min                    
                     PWM_Soft_Handler_Low_Freq_Roof_Set (64);
                 }
 

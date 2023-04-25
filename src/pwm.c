@@ -138,6 +138,7 @@ void PWM_Map_Post_Filter_Top_Multiplier (unsigned char top_multiplier,
 }
 
 
+// #define MIN_FOR_SOFT_PWM    24
 // #define MIN_FOR_SOFT_PWM    33
 #define MIN_FOR_SOFT_PWM    100
 // #define MIN_FOR_SOFT_PWM    40
@@ -153,35 +154,45 @@ void PWM_Map_Post_Filter (unsigned short dmx_filtered, unsigned short * pwm_ena,
     // adjust for max pwm 4095
     unsigned int top_value = dmx_filtered * top_mult;
     dmx_filtered = top_value / 100;
-    // dmx_ch = dmx_ch * top_mult;
-    // dmx_ch = dmx_ch / 100;
     
     if (dmx_filtered > (soft_pwm_steps - 1))
     {
         dmx_ena = (soft_pwm_steps - 1);
         dmx_ch = dmx_filtered - (soft_pwm_steps - 1) + MIN_FOR_SOFT_PWM;
 
-        // adjust for max pwm 4095
-        // dmx_ch = dmx_ch * top_mult;
-        // dmx_ch = dmx_ch / 100;
-
         if (dmx_ch > 4095)
             dmx_ch = 4095;
     }
     else    // values from 0 to 255
     {
-        // if (dmx_filtered <= top_min_curr)
+        if (dmx_filtered < top_min_curr + 2)
+        {
+            // divided by three but not for one amp
+            if (top_min_curr > 2)
+                dmx_filtered = dmx_filtered / 3;
+            else
+                dmx_filtered >>= 1;
+        }
+        // else if (dmx_filtered < 40)
         // {
-        //     dmx_filtered >>= top_min_curr_bits;
+        //     // divided by two
+        //     dmx_filtered >>= 1;
         // }
-        // else if (dmx_filtered <= (top_min_curr * 2))
+        // else if (dmx_filtered < 80)
         // {
-        //     dmx_filtered >>= top_min_curr_bits;
+        //     unsigned short a = dmx_filtered * 2;
+        //     // divided by 1.5
+        //     dmx_filtered = a / 3;
         // }
-        // if (dmx_filtered <= top_min_curr)
-        // {
-        //     dmx_filtered >>= top_min_curr_bits;
-        // }
+        else if (dmx_filtered < 60)
+        {
+            if (top_min_curr != 2)
+            {
+                unsigned short a = dmx_filtered * 8;
+                // divided by 1.25
+                dmx_filtered = a / 10;
+            }
+        }
         
         dmx_ena = dmx_filtered;
         dmx_ch = MIN_FOR_SOFT_PWM;
