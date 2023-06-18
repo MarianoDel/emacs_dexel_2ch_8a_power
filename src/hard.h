@@ -15,12 +15,12 @@
 
 //-- Defines For Configuration -------------------
 //---- Configuration for Hardware Versions -------
-// #define HARDWARE_VERSION_1_1    //fuente 48V->12V en placa control
-#define HARDWARE_VERSION_1_0    //micro F030K6T6
+#define HARDWARE_VERSION_2_1    // tant cap with connections
+// #define HARDWARE_VERSION_2_0    //micro F030K6T6, original production
 
 
-// #define SOFTWARE_VERSION_1_1
-#define SOFTWARE_VERSION_1_0
+#define SOFTWARE_VERSION_1_1    // current conf on decimals 4.0A
+// #define SOFTWARE_VERSION_1_0    // original production
 
 
 //---- Features Configuration -----------------
@@ -88,6 +88,11 @@
 
 
 // Module Exported Functions ---------------------------------------------------
+void Led_On (void);
+void Led_Off (void);
+unsigned char Led_Is_On (void);
+char * HARD_GetHardwareVersion (void);
+char * HARD_GetSoftwareVersion (void);
 
 
 #endif    /* _HARD_H_ */

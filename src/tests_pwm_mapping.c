@@ -255,10 +255,12 @@ void Test_Dmx_Map_Post_Individual (void)
     // }
     
     printf("\n set to 1 amps\n");
-    unsigned short points = 50;
+    unsigned short points = 256;
     curr_mult = 2;
-    // PWM_Soft_Handler_Low_Freq_Roof_Set(roof);
-    PWM_Map_Post_Filter_Top_Multiplier(135, curr_mult, 1);
+    roof = 64;
+
+    PWM_Soft_Handler_Low_Freq_Roof_Set(roof);
+    PWM_Map_Post_Filter_Top_Multiplier(110, curr_mult, 1);
 
     for (int i = 0; i < points; i++)
     {

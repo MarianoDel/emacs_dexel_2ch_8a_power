@@ -43,13 +43,9 @@
 
 // Exported Functions ----------------------------------------------------------
 void PWMChannelsReset (void);
-unsigned short PWM_Map_From_Dmx (unsigned char);
-// void PWM_Set_PwrCtrl (unsigned char *, unsigned char, unsigned short);
-void PWM_Map_Pre_Filter (unsigned char dmx_data, unsigned short * pwm_ena, unsigned short * pwm_ch);
 void PWM_Map_Post_Filter (unsigned short dmx_filtered, unsigned short * pwm_ena, unsigned short * pwm_ch);
 void PWM_Map_Post_Filter_Top_Multiplier (unsigned char top_multiplier,
-                                         unsigned char min_curr,
-                                         unsigned char min_curr_bits);
+                                         unsigned char min_curr);
 
 void PWM_Soft_Handler_Low_Freq_Roof_Set (unsigned short new_roof);
 void PWM_Soft_Set_Channels (unsigned char ch, unsigned short value);

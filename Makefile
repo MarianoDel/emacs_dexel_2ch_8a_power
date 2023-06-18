@@ -77,7 +77,7 @@ SRC += ./src/dsp.c
 SRC += ./src/gpio.c
 SRC += ./src/it.c
 SRC += ./src/tim.c
-# SRC += ./src/spi.c
+SRC += ./src/hard.c
 SRC += ./src/usart.c
 SRC += ./src/utils.c
 SRC += ./src/filters_and_offsets.c
@@ -212,6 +212,17 @@ tests:
 	./a.out
 
 
+tests_comms:
+	# first compile common modules (modules to test and dependencies)
+	gcc -c src/comms.c -I. $(INCDIR) -DSTM32F030
+	gcc -c src/utils.c -I. $(INCDIR)
+	# second auxiliary helper modules
+	gcc -c src/tests_ok.c -I $(INCDIR)
+	gcc -c src/tests_mock_usart.c -I $(INCDIR)
+	gcc src/tests_comms.c comms.o utils.o tests_ok.o tests_mock_usart.o
+	./a.out
+
+
 tests_pwm_mapping:
 	# first compile common modules (modules to test and dependencies)
 	gcc -c src/pwm.c -I. $(INCDIR) -DSTM32F030
@@ -220,6 +231,7 @@ tests_pwm_mapping:
 	gcc -c src/tests_vector_utils.c -I $(INCDIR)
 	gcc src/tests_pwm_mapping.c pwm.o tests_ok.o tests_vector_utils.o
 	./a.out
+
 
 tests_filters_and_offsets:
 	# first compile common modules (modules to test and dependencies)

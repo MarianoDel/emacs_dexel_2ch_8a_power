@@ -43,8 +43,9 @@ unsigned char running_current_config = 0;
 // Module Functions ------------------------------------------------------------
 filters_and_offsets_e filters_sm = FILTERS_BKP_CONFIG_AND_CHANNELS;
 void FiltersAndOffsets_Post_Mapping_SM (volatile unsigned char * ch_dmx_val)
-{
+{    
     unsigned short ch1_pwm, ch2_pwm, ena1_pwm, ena2_pwm;
+    int calc;
     
     switch (filters_sm)
     {
@@ -57,8 +58,14 @@ void FiltersAndOffsets_Post_Mapping_SM (volatile unsigned char * ch_dmx_val)
         break;
 
     case FILTERS_LIMIT_EACH_CHANNEL:
-        limit_output[0] = limit_output[0] * running_current_config;    // 255 * 16 for 8 amps
-        limit_output[1] = limit_output[1] * running_current_config;
+        // ex. 7.9 amps
+        calc = limit_output[0] * running_current_config;    //255 * 158 = 40290
+        calc = calc / 10;    //40290 / 10 = 4029
+        limit_output[0] = (unsigned short) calc;
+
+        calc = limit_output[1] * running_current_config;
+        calc = calc / 10;
+        limit_output[1] = (unsigned short) calc;        
 
         filters_sm++;
         break;
@@ -109,9 +116,13 @@ void FiltersAndOffsets_Filters_Reset (void)
 }
 
 
-void FiltersAndOffsets_Set_Current (unsigned char new_current)
+void FiltersAndOffsets_Set_Current (unsigned char new_current_int, unsigned char new_current_dec)
 {
-    saved_current_config = new_current * 2;
+    // ex. 7.9 amps
+    int calc = new_current_int * 10;    // 70
+    calc = calc + new_current_dec;    //79
+    calc = calc * 2;    //158
+    saved_current_config = (unsigned char) calc;
 }
 
 

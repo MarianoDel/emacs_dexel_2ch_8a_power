@@ -8,8 +8,7 @@
 //---------------------------------------------
 
 // Includes Modules for tests --------------------------------------------------
-#include "comms_channels.h"
-#include "antennas_defs.h"
+#include "comms.h"
 
 // helper modules
 #include "tests_ok.h"
@@ -18,24 +17,24 @@
 #include <stdio.h>
 #include <string.h>
 
-
 // Types Constants and Macros --------------------------------------------------
 
 
 // Externals -------------------------------------------------------------------
 
+// Globals -- Externals in Module ----------------------------------------------
+volatile unsigned char last_ch_values [2] = { 0 };
+
 
 // Globals ---------------------------------------------------------------------
-antenna_st global_ant;
 int cb_usart_value = 0;
 
 
 
 // Module Functions to Test ----------------------------------------------------
-void Test_Comms_From_Channel1 (void);
-void Test_Comms_From_Channel2 (void);
-void Test_Comms_From_Channel3 (void);
-void Test_Comms_From_Channel4 (void);
+void Test_Comms_Dmx (void);
+void Test_Comms_Current (void);
+void Test_Comms_Version (void);
 
 
 // Module Auxiliary Functions --------------------------------------------------
@@ -49,252 +48,181 @@ void CB_Usart (char * s);
 int main (int argc, char *argv[])
 {
 
-    Test_Comms_From_Channel1 ();
-    Test_Comms_From_Channel2 ();
-    Test_Comms_From_Channel3 ();
-    Test_Comms_From_Channel4 ();
+    Test_Comms_Dmx ();
+
+    Test_Comms_Current ();
+
+    Test_Comms_Version ();
 
     return 0;
 }
 
 
-void Test_Comms_From_Channel1 (void)
+void Test_Comms_Dmx (void)
 {
-    // set callback on usart2
-    Usart2Callback(CB_Usart);
-
+    // set callback on usart1
+    Usart1Callback(CB_Usart);
 
     cb_usart_value = 0;
-    Usart2FillRxBuffer("loco\r\n");    
-    Comms_Channel1 ();
+    Usart1FillRxBuffer("loco\r\n");    
+    Comms_Update ();
 
-    printf("Test error string on channel 1: ");
+    printf("Test no answer string: ");
+    if (cb_usart_value == 0)
+        PrintOK();
+    else
+        PrintERR();
+
+    printf("\n");
+    cb_usart_value = 0;    
+    Usart1FillRxBuffer("ch1 aaa ch2 255 sum 511 ");
+    Comms_Update ();
+    
+    printf("Test error string ch1: ");
     if (cb_usart_value == 1)
         PrintOK();
     else
         PrintERR();
 
-
+    printf("\n");
     cb_usart_value = 0;    
-    Usart2FillRxBuffer("name:Tunel\r\n");
-    Comms_Channel1 ();
+    Usart1FillRxBuffer("ch1 255 ch2 aaa sum 511 ");
+    Comms_Update ();
     
-    printf("Test correct string on channel 1: ");
+    printf("Test error string ch2: ");
     if (cb_usart_value == 2)
         PrintOK();
     else
         PrintERR();
 
-
-    char my_ant_str [] = { "ant3,003.50,019.00,003.50,065.00\r\n" };
+    printf("\n");
     cb_usart_value = 0;    
-    Usart2FillRxBuffer(my_ant_str);
-    Comms_Channel1 ();
+    Usart1FillRxBuffer("ch1 255 ch2 255 sum 511 ");
+    Comms_Update ();
     
-    printf("Test antenna parse: ");
-    if ((cb_usart_value == 2) &&
-        (global_ant.resistance_int == 3) &&
-        (global_ant.resistance_dec == 50) &&
-        (global_ant.inductance_int == 19) &&
-        (global_ant.inductance_dec == 0) &&
-        (global_ant.current_limit_int == 3) &&
-        (global_ant.current_limit_dec == 50) &&
-        (global_ant.temp_max_int == 65) &&
-        (global_ant.temp_max_dec == 0))
-    {
-        PrintOK();
-    }
-    else
-        PrintERR();
-
-    cb_usart_value = 0;    
-    Usart2FillRxBuffer("temp,055.55\r\n");
-    Comms_Channel1 ();
-    
-    printf("Test antenna current temp: ");
-    if (cb_usart_value == 2)
+    printf("Test error string verif: ");
+    if (cb_usart_value == 3)
         PrintOK();
     else
         PrintERR();
 
+    printf("\n");
     cb_usart_value = 0;    
-    Usart2FillRxBuffer("ok\r\n");
-    Comms_Channel1 ();
+    Usart1FillRxBuffer("ch1 255 ch2 255 sum 510 ");
+    Comms_Update ();
     
-    printf("Test antenna keepalive answer: ");
-    if (cb_usart_value == 2)
+    printf("Test good string: ");
+    if (cb_usart_value == 0)
+        PrintOK();
+    else
+        PrintERR();
+    
+}
+
+
+void Test_Comms_Current (void)
+{
+    // set callback on usart1
+    Usart1Callback(CB_Usart);
+
+    printf("\n");
+    cb_usart_value = 0;
+    Usart1FillRxBuffer("current config 4.0\r\n");    
+    Comms_Update ();
+
+    printf("Test current string: ");
+    if (cb_usart_value == 4)
         PrintOK();
     else
         PrintERR();
 
-    char my_ant_str2 [] = { "ant3,0aa.50,019.00,003.50,065.00\r\n" };    
-    cb_usart_value = 0;    
-    Usart2FillRxBuffer(my_ant_str2);
-    Comms_Channel1 ();
-    
-    printf("Test antenna error on params: ");
-    if (cb_usart_value == 1)
-        PrintOK();
-    else
-        PrintERR();
+}
 
-    cb_usart_value = 0;    
-    Usart2FillRxBuffer("temp,0aa.55\r\n");
-    Comms_Channel1 ();
-    
-    printf("Test antenna error on temp integer: ");
-    if (cb_usart_value == 1)
-        PrintOK();
-    else
-        PrintERR();
 
-    cb_usart_value = 0;    
-    Usart2FillRxBuffer("temp,055.aa\r\n");
-    Comms_Channel1 ();
-    
-    printf("Test antenna error on temp decimal: ");
-    if (cb_usart_value == 1)
+void Test_Comms_Version (void)
+{
+    // set callback on usart1
+    Usart1Callback(CB_Usart);
+
+    printf("\n");
+    cb_usart_value = 0;
+    Usart1FillRxBuffer("version\r\n");
+    Comms_Update ();
+
+    printf("Test version string: ");
+    if (cb_usart_value == 5)
         PrintOK();
     else
         PrintERR();
-    
 }
 
 // 1 on error
 // 2 on ok
 void CB_Usart (char * s)
 {
-    if (strncmp(s, "ERROR", sizeof("ERROR") - 1) == 0)
+    if (strncmp(s, "err ch1", sizeof("err ch1") - 1) == 0)
         cb_usart_value = 1;
 
-    if (strncmp(s, "OK", sizeof("OK") - 1) == 0)
+    if (strncmp(s, "err ch2", sizeof("err ch2") - 1) == 0)
         cb_usart_value = 2;
+
+    if (strncmp(s, "err verif", sizeof("err verif") - 1) == 0)
+        cb_usart_value = 3;
     
+    if (strncmp(s, "ok", sizeof("ok") - 1) == 0)
+        cb_usart_value = 4;
+
+    if (strncmp(s, "Hrd 2.0 Soft 1.1", sizeof("Hrd 2.0 Soft 1.1") - 1) == 0)
+        cb_usart_value = 5;
 }
 
-
-void Test_Comms_From_Channel2 (void)
-{
-    // set callback on usart3
-    Usart3Callback(CB_Usart);
-
-    cb_usart_value = 0;    
-    Usart3FillRxBuffer("loco\r\n");    
-    Comms_Channel2 ();
-
-    printf("Test error string on channel 2: ");
-    if (cb_usart_value == 1)
-        PrintOK();
-    else
-        PrintERR();
-
-    cb_usart_value = 0;    
-    Usart3FillRxBuffer("name:Tunel\r\n");
-    Comms_Channel2 ();
-    
-    printf("Test correct string on channel 2: ");
-    if (cb_usart_value == 2)
-        PrintOK();
-    else
-        PrintERR();
-}
-
-
-void Test_Comms_From_Channel3 (void)
-{
-    // set callback on uart4
-    Uart4Callback(CB_Usart);
-
-    cb_usart_value = 0;    
-    Uart4FillRxBuffer("loco\r\n");    
-    Comms_Channel3 ();
-
-    printf("Test error string on channel 3: ");
-    if (cb_usart_value == 1)
-        PrintOK();
-    else
-        PrintERR();
-
-    cb_usart_value = 0;    
-    Uart4FillRxBuffer("name:Tunel\r\n");
-    Comms_Channel3 ();
-    
-    printf("Test correct string on channel 3: ");
-    if (cb_usart_value == 2)
-        PrintOK();
-    else
-        PrintERR();
-}
-
-
-void Test_Comms_From_Channel4 (void)
-{
-    // set callback on uart5
-    Uart5Callback(CB_Usart);
-
-    cb_usart_value = 0;    
-    Uart5FillRxBuffer("loco\r\n");    
-    Comms_Channel4 ();
-
-    printf("Test error string on channel 4: ");
-    if (cb_usart_value == 1)
-        PrintOK();
-    else
-        PrintERR();
-
-    cb_usart_value = 0;    
-    Uart5FillRxBuffer("name:Tunel\r\n");
-    Comms_Channel4 ();
-    
-    printf("Test correct string on channel 4: ");
-    if (cb_usart_value == 2)
-        PrintOK();
-    else
-        PrintERR();
-}
 
 // Module Mocked Functions -----------------------------------------------------
-void AntennaSetCurrentTemp (unsigned char ch, unsigned char t_int, unsigned char t_dec)
+void Led_On (void)
 {
-    printf("set current temp on ch%d %d.%dC\n", ch + 1, t_int, t_dec);
-}
-
-void AntennaIsAnswering (unsigned char ch)
-{
-    printf("antenna is answering on ch%d\n", ch + 1);
-}
-
-void AntennaSetName (unsigned char ch, char * pname)
-{
-    printf("antenna on ch%d set name to: %s\n", ch + 1, pname);
+    printf("Led is on\n");
 }
 
 
-
-void AntennaSetParamsStruct (unsigned char ch, antenna_st *ant)
+void Led_Off (void)
 {
-    printf("antenna on ch%d set params to:\n", ch + 1);
-    printf("  R: %d.%d L: %d.%d I: %d.%d T: %d.%d\n",
-           ant->resistance_int,
-           ant->resistance_dec,
-           ant->inductance_int,
-           ant->inductance_dec,
-           ant->current_limit_int,
-           ant->current_limit_dec,
-           ant->temp_max_int,
-           ant->temp_max_dec);
-
-    global_ant.resistance_int = ant->resistance_int; 
-    global_ant.resistance_dec = ant->resistance_dec;
-    global_ant.inductance_int = ant->inductance_int;
-    global_ant.inductance_dec = ant->inductance_dec;
-    global_ant.current_limit_int = ant->current_limit_int;
-    global_ant.current_limit_dec = ant->current_limit_dec;
-    global_ant.temp_max_int = ant->temp_max_int;
-    global_ant.temp_max_dec = ant->temp_max_dec;
-
+    printf("Led is off\n");
 }
+
+
+void FiltersAndOffsets_Set_Current (unsigned char cint, unsigned char cdec)
+{
+    printf("current setted to: %01d.%01dA\n", cint, cdec);
+}
+
+
+void PWM_Map_Post_Filter_Top_Multiplier (unsigned char top_multiplier,
+                                         unsigned char min_curr)
+{
+    printf("pwm new settings top mult: %d min curr: %d\n",
+           top_multiplier,
+           min_curr);
     
+}
+
+void PWM_Soft_Handler_Low_Freq_Roof_Set (unsigned short new_roof)
+{
+    printf("pwm soft step to: %d\n", new_roof);
+}
+
+
+char hard_ver [] = {"Hrd 2.0"};
+char * HARD_GetHardwareVersion (void)
+{
+    return hard_ver;
+}
+
+
+char soft_ver [] = {"Soft 1.1"};
+char * HARD_GetSoftwareVersion (void)
+{
+    return soft_ver;
+}
 //--- end of file ---//
 
 

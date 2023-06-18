@@ -15,8 +15,6 @@
 
 #include "filters_and_offsets.h"
 
-
-
 #include <string.h>
 #include <stdio.h>
 
@@ -40,7 +38,7 @@ void Comms_Update (void)
     
     if (Usart1HaveData())
     {
-        LED_ON;
+        Led_On();
         Usart1HaveDataReset();
         readed = Usart1ReadBuffer(buff_local, 127);
         if (readed == sizeof("ch1 255 ch2 255 sum 511"))    //readed incluye \0
@@ -80,55 +78,57 @@ void Comms_Update (void)
 
         if (!strncmp(buff_local, "current config ", sizeof("current config ") - 1))
         {
-            char current = *(buff_local + (sizeof("current config ") - 1));
-            if ((current >= '1') && (current <= '8'))
+            char cint = *(buff_local + (sizeof("current config ") - 1));
+            char cdec = *(buff_local + (sizeof("current config 8.") - 1));            
+            if ((cint >= '1') && (cint <= '8') &&
+                (cdec >= '0') && (cdec <= '9'))
             {
-                FiltersAndOffsets_Set_Current(current - '0');
-                if (current == '8')
+                FiltersAndOffsets_Set_Current(cint - '0', cdec - '0');
+                if (cint == '8')
                 {
-                    PWM_Map_Post_Filter_Top_Multiplier(97, 16, 4);    // for 100pts min
+                    PWM_Map_Post_Filter_Top_Multiplier(97, 16);    // for 100pts min
                     // PWM_Map_Post_Filter_Top_Multiplier(101, 16, 4);    // for 33pts min                    
                     PWM_Soft_Handler_Low_Freq_Roof_Set (256);
                 }
-                else if (current == '7')
+                else if (cint == '7')
                 {
-                    PWM_Map_Post_Filter_Top_Multiplier(99, 14, 3);    // for 100pts min
+                    PWM_Map_Post_Filter_Top_Multiplier(99, 14);    // for 100pts min
                     // PWM_Map_Post_Filter_Top_Multiplier(103, 14, 3);    // for 33pts min                    
                     PWM_Soft_Handler_Low_Freq_Roof_Set (256);
                 }
-                else if (current == '6')
+                else if (cint == '6')
                 {
-                    PWM_Map_Post_Filter_Top_Multiplier(101, 12, 3);    // for 100pts min
+                    PWM_Map_Post_Filter_Top_Multiplier(101, 12);    // for 100pts min
                     // PWM_Map_Post_Filter_Top_Multiplier(105, 12, 3);    // for 33pts min                    
                     PWM_Soft_Handler_Low_Freq_Roof_Set (256);
                 }
-                else if (current == '5')
+                else if (cint == '5')
                 {
-                    PWM_Map_Post_Filter_Top_Multiplier(103, 10, 3);    // for 100pts min
+                    PWM_Map_Post_Filter_Top_Multiplier(103, 10);    // for 100pts min
                     // PWM_Map_Post_Filter_Top_Multiplier(109, 10, 3);    // for 33pts min                    
                     PWM_Soft_Handler_Low_Freq_Roof_Set (256);
                 }
-                else if (current == '4')
+                else if (cint == '4')
                 {
-                    PWM_Map_Post_Filter_Top_Multiplier(106, 8, 3);    // for 100pts min
+                    PWM_Map_Post_Filter_Top_Multiplier(106, 8);    // for 100pts min
                     // PWM_Map_Post_Filter_Top_Multiplier(113, 8, 3);    // for 33pts min                    
                     PWM_Soft_Handler_Low_Freq_Roof_Set (256);
                 }
-                else if (current == '3')
+                else if (cint == '3')
                 {
-                    PWM_Map_Post_Filter_Top_Multiplier(111, 6, 2);    // for 100pts min
+                    PWM_Map_Post_Filter_Top_Multiplier(111, 6);    // for 100pts min
                     // PWM_Map_Post_Filter_Top_Multiplier(120, 6, 2);    // for 33pts min                    
                     PWM_Soft_Handler_Low_Freq_Roof_Set (256);
                 }
-                else if (current == '2')
+                else if (cint == '2')
                 {
-                    PWM_Map_Post_Filter_Top_Multiplier(108, 4, 2);    // for 100pts min
+                    PWM_Map_Post_Filter_Top_Multiplier(108, 4);    // for 100pts min
                     // PWM_Map_Post_Filter_Top_Multiplier(119, 4, 2);    // for 33pts min                    
                     PWM_Soft_Handler_Low_Freq_Roof_Set (128);
                 }
-                else if (current == '1')
+                else if (cint == '1')
                 {
-                    PWM_Map_Post_Filter_Top_Multiplier(110, 2, 1);    // for 100pts min
+                    PWM_Map_Post_Filter_Top_Multiplier(110, 2);    // for 100pts min
                     // PWM_Map_Post_Filter_Top_Multiplier(135, 2, 1);    // for 33pts min                    
                     PWM_Soft_Handler_Low_Freq_Roof_Set (64);
                 }
@@ -139,77 +139,16 @@ void Comms_Update (void)
             {
             }
         }
+
+        if (!strncmp(buff_local, "version", sizeof("version") - 1))
+        {
+            sprintf(buff_local,"%s %s\n", HARD_GetHardwareVersion(), HARD_GetSoftwareVersion());
+            Usart1Send(buff_local);
+        }
             
-        LED_OFF;
+        Led_Off();;
     }
 }
-
-
-
-
-// resp_e ParseCommsWithChannels (char * str, unsigned char channel)
-// {
-//     resp_e resp = resp_error;
-//     char dummy_str [30] = { 0 };
-    
-//     //temp,055.00\r\n
-//     if (!strncmp(str, (const char *)"temp", (sizeof("temp") - 1)))
-//     {
-//         if ((*(str + 4) == ',') &&
-//             (*(str + 8) == '.') &&
-//             (*(str + 11) == '\r'))
-//         {
-//             unsigned char temp_i = 0;
-//             unsigned char temp_d = 0;
-
-//             if (ParseCurrentTemp(str, &temp_i, &temp_d) == resp_ok)
-//             {
-//                 AntennaSetCurrentTemp (channel, temp_i, temp_d);
-
-//                 sprintf(dummy_str, ",%d\r\n", channel);
-//                 strcpy((str + 11), dummy_str);
-//                 RpiSend(str);
-//                 resp = resp_ok;
-//             }
-//         }
-//     }
-
-//     //ant0,012.27,087.90,001.80,065.00\r\n.
-//     else if (!strncmp(str, (const char *)"ant", (sizeof("ant") - 1)))
-//     {
-//         sprintf(dummy_str, "new antenna ch%d\r\n", channel + 1);
-//         RpiSend(dummy_str);
-        
-//         if ((*(str + 4) == ',') &&
-//             (*(str + 11) == ',') &&
-//             (*(str + 18) == ',') &&
-//             (*(str + 25) == ','))
-//         {
-//             antenna_st antenna_aux;
-//             if (ParseAntennaParams ((char *) buff, &antenna_aux) == resp_ok)
-//             {
-//                 AntennaSetParamsStruct (channel, &antenna_aux);
-//                 resp = resp_ok;
-//             }
-//         }
-//     }
-
-//     //respuesta al keepalive
-//     else if (!strncmp(str, (const char *)"ok", (sizeof("ok") - 1)))
-//     {
-//         AntennaIsAnswering(channel);
-//         resp = resp_ok;
-//     }
-
-//     else if ((!strncmp(str, (const char *)"name:", sizeof("name:") - 1)))
-//     {
-//         AntennaSetName(channel, (str + (sizeof("name:") - 1)));
-//         resp = resp_ok;
-//     }
-
-//     return resp;
-// }
-
 
 
 //---- end of file ----//

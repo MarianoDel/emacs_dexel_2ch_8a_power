@@ -36,105 +36,16 @@ void PWMChannelsReset (void)
 }
 
 
-unsigned short PWM_Map_From_Dmx (unsigned char dmx_val)
-{
-    unsigned int pwm = 0;
-
-#if (DUTY_100_PERCENT == 1000)    
-    if (dmx_val)
-    {
-        pwm = dmx_val * 391;
-        pwm = pwm / 100;
-        pwm += 4;
-    }
-#endif
-#if (DUTY_100_PERCENT == 4000)
-    if (dmx_val)
-    {
-        pwm = dmx_val * 157;
-        pwm = pwm / 10;
-        pwm += 13;
-    }
-#endif
-
-    return (unsigned short) pwm;
-
-}
-
-
-// void PWM_Set_PwrCtrl (unsigned char * ch_dmx_val, unsigned char chnls_qtty, unsigned short max_power)
-// {
-//     unsigned short total_dmx = 0;
-
-//     //cuantos en total
-//     for (unsigned char i = 0; i < chnls_qtty; i++)
-//         total_dmx += *(ch_dmx_val + i);
-
-//     if (total_dmx > max_power)
-//     {
-//         unsigned int new = 0;
-//         for (unsigned char i = 0; i < chnls_qtty; i++)
-//         {
-//             // si el canal tiene algo
-//             if (*(ch_dmx_val + i))
-//             {
-//                 new = *(ch_dmx_val + i) * max_power;
-//                 new = new / total_dmx;
-
-//                 // no dejo que se apaguen los canales
-//                 if (new)
-//                     *(ch_dmx_val + i) = (unsigned char) new;
-//                 else
-//                     *(ch_dmx_val + i) = 1;
-                
-//             }
-//         }
-//     }
-// }
-
-
-// get dmx_data from 0 to 255
-// answer pwm_ena 0 to 4096
-// answer pwm_ch 0 to 4096
-void PWM_Map_Pre_Filter (unsigned char dmx_data, unsigned short * pwm_ena, unsigned short * pwm_ch)
-{
-    unsigned char dmx_ena = 0;
-    unsigned short dmx_ch = 0;
-    
-    if (dmx_data > 4)
-    {
-        dmx_ena = 4;
-        dmx_ch = dmx_data - 4;
-    }
-    else
-    {
-        dmx_ena = dmx_data;
-        dmx_ch = 0;
-    }
-
-    // *pwm_ena = dmx_ena * 1024;
-    *pwm_ena = dmx_ena << 10;
-    
-    dmx_ch = dmx_ch * 164;
-    dmx_ch = dmx_ch / 10;
-    *pwm_ch = dmx_ch;
-    
-}
-
-
 unsigned char top_min_curr = 8;    // 8 default to 4amps
-unsigned char top_min_curr_bits = 3;    // 3 bits default to 4amps
-unsigned char top_mult = 113;    // default to 4amps
+unsigned char top_mult = 106;    // default to 4amps
 // unsigned char top_mult = 102;    // 8.03 amps
 // unsigned char top_mult = 97;    // 7.64 amps
 // unsigned char top_mult = 116;    // default for 4.2, 8.3amps
 void PWM_Map_Post_Filter_Top_Multiplier (unsigned char top_multiplier,
-                                         unsigned char min_curr,
-                                         unsigned char min_curr_bits)
+                                         unsigned char min_curr)
 {
     top_mult = top_multiplier;
     top_min_curr = min_curr;
-    top_min_curr_bits = min_curr_bits;
 }
 
 

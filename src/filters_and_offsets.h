@@ -19,7 +19,7 @@
 // Module Exported Functions ---------------------------------------------------
 void FiltersAndOffsets_Post_Mapping_SM (volatile unsigned char * ch_dmx_val);
 void FiltersAndOffsets_Filters_Reset (void);
-void FiltersAndOffsets_Set_Current (unsigned char new_current);
+void FiltersAndOffsets_Set_Current (unsigned char new_current_int, unsigned char new_current_dec);
 
 
 #endif    /* _FILTERS_AND_OFFSETS_H_ */
