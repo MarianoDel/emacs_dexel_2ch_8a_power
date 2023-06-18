@@ -142,8 +142,9 @@ void Comms_Update (void)
 
         if (!strncmp(buff_local, "version", sizeof("version") - 1))
         {
-            sprintf(buff_local,"%s %s\n", HARD_GetHardwareVersion(), HARD_GetSoftwareVersion());
-            Usart1Send(buff_local);
+            char buff [30] = { 0 };
+            sprintf(buff,"%s %s\n", HARD_GetHardwareVersion(), HARD_GetSoftwareVersion());
+            Usart1Send(buff);
         }
             
         Led_Off();;

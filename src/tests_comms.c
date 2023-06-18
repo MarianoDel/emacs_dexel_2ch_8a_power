@@ -156,8 +156,8 @@ void Test_Comms_Version (void)
         PrintERR();
 }
 
-// 1 on error
-// 2 on ok
+
+// Module Auxiliary Functions --------------------------------------------------
 void CB_Usart (char * s)
 {
     if (strncmp(s, "err ch1", sizeof("err ch1") - 1) == 0)
