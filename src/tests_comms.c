@@ -33,8 +33,9 @@ int cb_usart_value = 0;
 
 // Module Functions to Test ----------------------------------------------------
 void Test_Comms_Dmx (void);
-void Test_Comms_Current (void);
 void Test_Comms_Version (void);
+void Test_Comms_Current_Old_String (void);
+void Test_Comms_Current_New_String (void);
 
 
 // Module Auxiliary Functions --------------------------------------------------
@@ -48,11 +49,13 @@ void CB_Usart (char * s);
 int main (int argc, char *argv[])
 {
 
-    Test_Comms_Dmx ();
+    // Test_Comms_Dmx ();
 
-    Test_Comms_Current ();
+    // Test_Comms_Version ();
 
-    Test_Comms_Version ();
+    Test_Comms_Current_Old_String ();
+
+    // Test_Comms_Current_New_String ();    
 
     return 0;
 }
@@ -120,14 +123,14 @@ void Test_Comms_Dmx (void)
 }
 
 
-void Test_Comms_Current (void)
+void Test_Comms_Current_New_String (void)
 {
     // set callback on usart1
     Usart1Callback(CB_Usart);
 
     printf("\n");
     cb_usart_value = 0;
-    Usart1FillRxBuffer("current config 4.0\r\n");    
+    Usart1FillRxBuffer("current config 4.3\r\n");
     Comms_Update ();
 
     printf("Test current string: ");
@@ -136,6 +139,36 @@ void Test_Comms_Current (void)
     else
         PrintERR();
 
+}
+
+
+void Test_Comms_Current_Old_String (void)
+{
+    // set callback on usart1
+    Usart1Callback(CB_Usart);
+
+    printf("\n");
+    cb_usart_value = 0;
+    Usart1FillRxBuffer("current config 4 5\r\n");
+    Comms_Update ();
+
+    printf("Test current string: ");
+    if (cb_usart_value == 4)
+        PrintOK();
+    else
+        PrintERR();
+
+    // printf("\n");
+    // cb_usart_value = 0;
+    // Usart1FillRxBuffer("current config 8\r\n");    
+    // Comms_Update ();
+
+    // printf("Test current string: ");
+    // if (cb_usart_value == 4)
+    //     PrintOK();
+    // else
+    //     PrintERR();
+    
 }
 
 
