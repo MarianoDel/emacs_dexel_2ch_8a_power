@@ -1,5 +1,4 @@
 //------------------------------------------------
-// #### PROJECT: O3 TREATMENT - Custom Board #####
 // ## Internal Test Functions Module
 // ##
 // ## @Author: Med
