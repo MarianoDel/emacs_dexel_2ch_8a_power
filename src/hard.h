@@ -15,11 +15,12 @@
 
 //-- Defines For Configuration -------------------
 //---- Configuration for Hardware Versions -------
-#define HARDWARE_VERSION_2_1    // tant cap with connections
-// #define HARDWARE_VERSION_2_0    //micro F030K6T6, original production
+// #define HARDWARE_VERSION_2_1    // tant cap with connections
+#define HARDWARE_VERSION_2_0    //micro F030K6T6, original production
 
 
-#define SOFTWARE_VERSION_1_1    // current conf on decimals 4.0A
+#define SOFTWARE_VERSION_1_2    // starts with channels disable, avoid the startup pulse on leds
+// #define SOFTWARE_VERSION_1_1    // current conf on decimals 4.0A
 // #define SOFTWARE_VERSION_1_0    // original production
 
 

@@ -139,19 +139,27 @@ void TIM_1_Init_pwm_neg_CH1_trig_CH2 (void)
     TIM1->CCMR2 = 0x0000;
     TIM1->CCER |= TIM_CCER_CC1E | TIM_CCER_CC1P;    // CH1 enable, polarity reversal
     
-    TIM1->ARR = VALUE_FOR_LEAST_FREQ;    //cada tick 20.83ns
+    // TIM1->ARR = VALUE_FOR_LEAST_FREQ;    //cada tick 20.83ns
+    TIM1->ARR = 0;    //start with channel disable    
 
     TIM1->CNT = 0;
     TIM1->PSC = 0;
 
     TIM1->BDTR |= TIM_BDTR_MOE;    
-
-    unsigned int temp = 0;    
+    
+    unsigned int temp = 0;
+    // alternative to function
     temp = GPIOA->AFR[1];
     temp &= 0xFFFFFF00;
     temp |= 0x00000022;    //PA9 -> AF2; PA8 -> AF2
     GPIOA->AFR[1] = temp;
-    
+
+    // gpio to alternative
+    temp = GPIOA->MODER;    //2 bits por pin
+    temp &= 0xFFF0FFFF;    // PA8 - PA9 alternative
+    temp |= 0x000A0000;
+    GPIOA->MODER = temp;
+
     // Enable timer ver UDIS
     TIM1->CCR1 = VALUE_FOR_CONSTANT_OFF;
     TIM1->CR1 |= TIM_CR1_CEN;
@@ -181,16 +189,24 @@ void TIM_3_Init_pwm_neg_CH1_trig_CH2 (void)
     TIM3->CCMR2 = 0x0000;
     TIM3->CCER |= TIM_CCER_CC1E | TIM_CCER_CC1P;    // CH1 enable, polarity reversal
     
-    TIM3->ARR = VALUE_FOR_LEAST_FREQ;    //cada tick 20.83ns
+    // TIM3->ARR = VALUE_FOR_LEAST_FREQ;    //cada tick 20.83ns
+    TIM3->ARR = 0;    // start with channel disable  
 
     TIM3->CNT = 0;
     TIM3->PSC = 0;
 
     unsigned int temp = 0;    
+    // alternative to function
     temp = GPIOB->AFR[0];
     temp &= 0xFF00FFFF;
     temp |= 0x00110000;    //PB5 -> AF1; PB4 -> AF1
     GPIOB->AFR[0] = temp;
+
+    // gpio to alternative
+    temp = GPIOB->MODER;    //2 bits por pin
+    temp &= 0xFFFFF0FF;    // PB4 - PB5 alternative
+    temp |= 0x00000A00;
+    GPIOB->MODER = temp;
     
     // Enable timer ver UDIS
     TIM3->CCR1 = VALUE_FOR_CONSTANT_OFF;

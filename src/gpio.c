@@ -83,8 +83,10 @@ void GPIO_Config (void)
         GPIOA_CLK_ON;
 
     temp = GPIOA->MODER;    //2 bits por pin
-    temp &= 0xFCF03F0F;    // PA2 PA3 alternative; PA7 alternative
-    temp |= 0x010A80A0;    // PA8 - PA9 alternative; PA12 out
+    // temp &= 0xFCF03F0F;    // PA2 PA3 alternative; PA7 alternative    
+    // temp |= 0x010A80A0;    // PA8 - PA9 alternative; PA12 out
+    temp &= 0xFCFF3F0F;    // PA2 PA3 alternative; PA7 alternative
+    temp |= 0x010080A0;    // PA8 - PA9 alternative init on TIM1; PA12 out    
     GPIOA->MODER = temp;
 
     temp = GPIOA->OTYPER;    //1 bit por pin
@@ -111,8 +113,10 @@ void GPIO_Config (void)
         GPIOB_CLK_ON;
 
     temp = GPIOB->MODER;    //2 bits por pin
-    temp &= 0xFFFFC03F;    // PB3 out; PB4 - PB6 alternative
-    temp |= 0x00002A40;
+    // temp &= 0xFFFFC03F;    // PB3 out; PB4 - PB6 alternative
+    // temp |= 0x00002A40;
+    temp &= 0xFFFFCF3F;    // PB3 out; PB4 & PB5 alternative on TIM3; PB6 alternative
+    temp |= 0x00002040;
     GPIOB->MODER = temp;
 
     temp = GPIOB->OTYPER;	//1 bit por pin

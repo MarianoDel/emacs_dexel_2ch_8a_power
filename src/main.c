@@ -89,13 +89,13 @@ int main(void)
 
     // Start Usart
     Usart1Config();
-
+    
     // Init TIM 17 for Soft or Int init
     TIM_17_Init ();
 
     PWM_Soft_Set_Channels (1, 0);
     PWM_Soft_Set_Channels (2, 0);
-    
+
     main_state_e main_state = MAIN_HARD_INIT;
 
     while (1)
