@@ -20,6 +20,7 @@
 
 
 #define SOFTWARE_VERSION_1_2    // starts with channels disable, avoid the startup pulse on leds
+                                // soft pwm with always on
 // #define SOFTWARE_VERSION_1_1    // current conf on decimals 4.0A
 // #define SOFTWARE_VERSION_1_0    // original production
 

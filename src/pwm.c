@@ -68,7 +68,8 @@ void PWM_Map_Post_Filter (unsigned short dmx_filtered, unsigned short * pwm_ena,
     
     if (dmx_filtered > (soft_pwm_steps - 1))
     {
-        dmx_ena = (soft_pwm_steps - 1);
+        // dmx_ena = (soft_pwm_steps - 1);
+        dmx_ena = soft_pwm_steps;    // change for always on
         dmx_ch = dmx_filtered - (soft_pwm_steps - 1) + MIN_FOR_SOFT_PWM;
 
         if (dmx_ch > 4095)
